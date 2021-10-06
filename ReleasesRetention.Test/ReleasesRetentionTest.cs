@@ -32,7 +32,7 @@ namespace ReleasesRetention.Test
             var expectedResult = new ReleaseRetentionResult { ReleaseId = "d943de9c-8a83-49f7-b301-a06e6ab176a2", EnvironmentId = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03" };
 
             Assert.Equal(expectedResult.ReleaseId, result[0].ReleaseId);
-            Assert.Equal(expectedResult.EnvironmentId, result[0].ReleaseId);
+            Assert.Equal(expectedResult.EnvironmentId, result[0].EnvironmentId);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace ReleasesRetention.Test
             var expectedResult = new ReleaseRetentionResult { ReleaseId = "62976be4-253a-4dd1-8814-89aea49a4364", EnvironmentId = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03" };
 
             Assert.Equal(expectedResult.ReleaseId, result[0].ReleaseId);
-            Assert.Equal(expectedResult.EnvironmentId, result[0].ReleaseId);
+            Assert.Equal(expectedResult.EnvironmentId, result[0].EnvironmentId);
         }
     }
 }
