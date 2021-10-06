@@ -16,8 +16,8 @@ namespace ReleasesRetention
             // TODO: Look at DeployedAt time to determine the latest release
 
             var projectReleaseJoinResult = from project in projects
-                        join release in releases on project.Id equals release.ProjectId
-                        select new { ProjectId = project.Id, ProjectName = project.Name, ReleaseId = release.Id, ReleaseVersion = release.Version, ReleaseCreated = release.Created };
+                                           join release in releases on project.Id equals release.ProjectId
+                                           select new { ReleaseId = release.Id };
 
             var projectReleaseDeploymentJoin = from projectReleaseJoin in projectReleaseJoinResult
                                                join deployment in deployments on projectReleaseJoin.ReleaseId equals deployment.ReleaseId
