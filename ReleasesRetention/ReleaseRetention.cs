@@ -13,8 +13,6 @@ namespace ReleasesRetention
         {
             // TODO: Assume if number of releases to keep is 0, we return all
 
-            // TODO: Look at DeployedAt time to determine the latest release
-
             var projectReleaseJoinResult = from project in projects
                                            join release in releases on project.Id equals release.ProjectId
                                            select new { ReleaseId = release.Id };
@@ -22,16 +20,10 @@ namespace ReleasesRetention
             var projectReleaseDeploymentJoin = from projectReleaseJoin in projectReleaseJoinResult
                                                join deployment in deployments on projectReleaseJoin.ReleaseId equals deployment.ReleaseId
                                                select new { ReleaseId = deployment.ReleaseId, EnvironmentId = deployment.EnvironmentId, DeployedAt = deployment.DeployedAt };
+            
+            var result = projectReleaseDeploymentJoin.OrderByDescending(r => r.DeployedAt).Take(numberOfReleasesToKeep).Select(r => new ReleaseRetentionResult { ReleaseId = r.ReleaseId, EnvironmentId = r.EnvironmentId});
 
-
-            // TODO: Hardcode first one for now
-            var firstResult = new ReleaseRetentionResult
-            {
-                ReleaseId = projectReleaseDeploymentJoin.First().ReleaseId,
-                EnvironmentId = projectReleaseDeploymentJoin.First().EnvironmentId
-            };
-
-            return new List<ReleaseRetentionResult> { firstResult };
+            return result.ToList();
         }
     }
 }
