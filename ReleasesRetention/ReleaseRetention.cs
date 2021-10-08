@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReleasesRetention
 {
@@ -27,12 +25,14 @@ namespace ReleasesRetention
             
             projects.ForEach(project =>
             {
+                if (orderByProject.Count() == 0) return;
+
                 var orderedProjects = orderByProject.Single(p => p.Key == project.Id).ToList().OrderByDescending(p => p.DeployedAt).Take(numberOfReleasesToKeep);
                 var selectResult = orderedProjects.Select(r => new ReleaseRetentionResult { ReleaseId = r.ReleaseId, EnvironmentId = r.EnvironmentId });
                 result.AddRange(selectResult);
             });
 
-            // Could return the name of the environment by looking up the environment name from environments
+            // TODO: Could validate that the environment exists
             return result;
         }
     }
