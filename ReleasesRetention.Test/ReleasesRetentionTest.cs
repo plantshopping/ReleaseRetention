@@ -1,5 +1,7 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace ReleasesRetention.Test
@@ -137,6 +139,54 @@ namespace ReleasesRetention.Test
             Assert.Equal("b29d67d1-dd1d-4c71-b144-6004c4cf2b03", result[1].EnvironmentId);
         }
 
-        // TODO Calculate release with no deployments, should return 0
+        [Fact]
+        public void Release_NoDeployment_ReturnsNoRelease()
+        {
+            // Arrange
+            var projects = new List<Project> { new Project { Id = "538fc083-130b-48cb-978b-5960e3b29093", Name = "Pets" } };
+
+            var releases = new List<Release> { new Release { Id = "d943de9c-8a83-49f7-b301-a06e6ab176a2", ProjectId = "538fc083-130b-48cb-978b-5960e3b29093", Version = "0.0.1", Created = new DateTime(2000, 1, 1) } };
+
+            // Act
+            var result = releaseRetention.CalculateRetention(projects, releases, new List<Deployment>(), new List<Environment>(), 1);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void MultipleProjectsReleasesDeploymentsEnvironments_KeepOneRelease_ReturnsCorrectRelease()
+        {
+            // Arrange
+            var projectsData = File.ReadAllText("Projects.json");
+            var projects = JsonConvert.DeserializeObject<List<Project>>(projectsData);
+
+            var releasesData = File.ReadAllText("Releases.json");
+            var releases = JsonConvert.DeserializeObject<List<Release>>(releasesData);
+
+            var deploymentData = File.ReadAllText("Deployments.json");
+            var deployments = JsonConvert.DeserializeObject<List<Deployment>>(deploymentData);
+
+            var environmentData = File.ReadAllText("Environments.json");
+            var environments = JsonConvert.DeserializeObject<List<Environment>>(environmentData);
+
+            // Act
+            var result = releaseRetention.CalculateRetention(projects, releases, deployments, environments, 1);
+
+            // Assert
+            Assert.Equal(4, result.Count);
+            Assert.Equal("Release-1", result[0].ReleaseId);
+            Assert.Equal("Environment-2", result[0].EnvironmentId);
+
+            Assert.Equal("Release-2", result[1].ReleaseId);
+            Assert.Equal("Environment-1", result[1].EnvironmentId);
+
+            Assert.Equal("Release-6", result[2].ReleaseId);
+            Assert.Equal("Environment-1", result[2].EnvironmentId);
+
+            Assert.Equal("Release-6", result[2].ReleaseId);
+            Assert.Equal("Environment-2", result[2].EnvironmentId);
+        }
+
     }
 }

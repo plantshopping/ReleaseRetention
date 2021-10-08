@@ -32,7 +32,7 @@ namespace ReleasesRetention
                 result.AddRange(selectResult);
             });
 
-            // TODO: Could validate that the environment exists
+            // TODO: Validate that the environment exists, assume for now that if an environment doesn't exist we keep it by default
             return result;
         }
     }
