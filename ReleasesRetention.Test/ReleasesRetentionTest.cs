@@ -28,14 +28,10 @@ namespace ReleasesRetention.Test
             var environment = new List<Environment> { new Environment { Id = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03", Name = "Staging" } };
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, deployment, environment, 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployment, environment, 1);
 
             // Assert
-            var expectedResult = new ReleaseRetentionResult { ReleaseId = "d943de9c-8a83-49f7-b301-a06e6ab176a2", EnvironmentId = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03" };
-
-            Assert.Single(result);
-            Assert.Equal(expectedResult.ReleaseId, result[0].ReleaseId);
-            Assert.Equal(expectedResult.EnvironmentId, result[0].EnvironmentId);
+            Assert.Equal("d943de9c-8a83-49f7-b301-a06e6ab176a2 kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03\n", result);
         }
 
         [Fact]
@@ -51,18 +47,14 @@ namespace ReleasesRetention.Test
             var environment = new List<Environment> { new Environment { Id = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03", Name = "Staging" } };
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, deployment, environment, 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployment, environment, 1);
 
             // Assert
-            var expectedResult = new ReleaseRetentionResult { ReleaseId = "62976be4-253a-4dd1-8814-89aea49a4364", EnvironmentId = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03" };
-
-            Assert.Single(result);
-            Assert.Equal(expectedResult.ReleaseId, result[0].ReleaseId);
-            Assert.Equal(expectedResult.EnvironmentId, result[0].EnvironmentId);
+            Assert.Equal("62976be4-253a-4dd1-8814-89aea49a4364 kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03\n", result);
         }
 
         [Fact]
-        public void MultipleReleases_MultipleDeployments_SameEnvironment_KeepTwoRelease_ReturnsCorrectRelease()
+        public void MultipleReleases_MultipleDeployments_SameEnvironment_KeepOneRelease_ReturnsCorrectRelease()
         {
             // Arrange
             var projects = new List<Project> { new Project { Id = "538fc083-130b-48cb-978b-5960e3b29093", Name = "Pets" } };
@@ -74,14 +66,10 @@ namespace ReleasesRetention.Test
             var environment = new List<Environment> { new Environment { Id = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03", Name = "Staging" } };
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, deployment, environment, 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployment, environment, 1);
 
             // Assert
-            var expectedResult = new ReleaseRetentionResult { ReleaseId = "d943de9c-8a83-49f7-b301-a06e6ab176a2", EnvironmentId = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03" };
-
-            Assert.Single(result);
-            Assert.Equal(expectedResult.ReleaseId, result[0].ReleaseId);
-            Assert.Equal(expectedResult.EnvironmentId, result[0].EnvironmentId);
+            Assert.Equal("d943de9c-8a83-49f7-b301-a06e6ab176a2 kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03\n", result);
         }
 
         [Fact]
@@ -97,15 +85,11 @@ namespace ReleasesRetention.Test
             var environment = new List<Environment> { new Environment { Id = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03", Name = "Staging" }, new Environment { Id = "0cad7113-cb92-4ac3-a999-3fd71573a92a", Name = "Production" } };
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, deployment, environment, 2);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployment, environment, 2);
 
             // Assert
-            Assert.Equal(2, result.Count);
-            Assert.Equal("d943de9c-8a83-49f7-b301-a06e6ab176a2", result[0].ReleaseId);
-            Assert.Equal("b29d67d1-dd1d-4c71-b144-6004c4cf2b03", result[0].EnvironmentId);
-
-            Assert.Equal("d943de9c-8a83-49f7-b301-a06e6ab176a2", result[1].ReleaseId);
-            Assert.Equal("0cad7113-cb92-4ac3-a999-3fd71573a92a", result[1].EnvironmentId);
+            Assert.Contains("d943de9c-8a83-49f7-b301-a06e6ab176a2 kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03", result);
+            Assert.Contains("d943de9c-8a83-49f7-b301-a06e6ab176a2 kept because it was the most recently deployed to 0cad7113-cb92-4ac3-a999-3fd71573a92a", result);
         }
 
         [Fact]
@@ -128,15 +112,10 @@ namespace ReleasesRetention.Test
 
             var environment = new List<Environment> { new Environment { Id = "b29d67d1-dd1d-4c71-b144-6004c4cf2b03", Name = "Staging" } };
 
-            var result = releaseRetention.CalculateRetention(projects, releases, deployment, environment, 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployment, environment, 1);
 
             // Assert
-            Assert.Equal(2, result.Count);
-            Assert.Equal("39971933-686d-425f-a63e-6c08be28649e", result[0].ReleaseId);
-            Assert.Equal("b29d67d1-dd1d-4c71-b144-6004c4cf2b03", result[0].EnvironmentId);
-
-            Assert.Equal("8614d609-2199-4fd9-9fe0-b35675a6e279", result[1].ReleaseId);
-            Assert.Equal("b29d67d1-dd1d-4c71-b144-6004c4cf2b03", result[1].EnvironmentId);
+            Assert.Equal("39971933-686d-425f-a63e-6c08be28649e kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03\n8614d609-2199-4fd9-9fe0-b35675a6e279 kept because it was the most recently deployed to b29d67d1-dd1d-4c71-b144-6004c4cf2b03\n", result);
         }
 
         [Fact]
@@ -148,7 +127,7 @@ namespace ReleasesRetention.Test
             var releases = new List<Release> { new Release { Id = "d943de9c-8a83-49f7-b301-a06e6ab176a2", ProjectId = "538fc083-130b-48cb-978b-5960e3b29093", Version = "0.0.1", Created = new DateTime(2000, 1, 1) } };
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, new List<Deployment>(), new List<Environment>(), 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, new List<Deployment>(), new List<Environment>(), 1);
 
             // Assert
             Assert.Empty(result);
@@ -171,21 +150,16 @@ namespace ReleasesRetention.Test
             var environments = JsonConvert.DeserializeObject<List<Environment>>(environmentData);
 
             // Act
-            var result = releaseRetention.CalculateRetention(projects, releases, deployments, environments, 1);
+            var result = releaseRetention.GetReleasesToKeep(projects, releases, deployments, environments, 1);
 
             // Assert
-            Assert.Equal(4, result.Count);
-            Assert.Equal("Release-1", result[0].ReleaseId);
-            Assert.Equal("Environment-2", result[0].EnvironmentId);
+            Assert.Contains("Release-1 kept because it was the most recently deployed to Environment-2", result);
 
-            Assert.Equal("Release-2", result[1].ReleaseId);
-            Assert.Equal("Environment-1", result[1].EnvironmentId);
+            Assert.Contains("Release-2 kept because it was the most recently deployed to Environment-1", result);
 
-            Assert.Equal("Release-6", result[2].ReleaseId);
-            Assert.Equal("Environment-1", result[2].EnvironmentId);
+            Assert.Contains("Release-6 kept because it was the most recently deployed to Environment-1", result);
 
-            Assert.Equal("Release-6", result[2].ReleaseId);
-            Assert.Equal("Environment-2", result[2].EnvironmentId);
+            Assert.Contains("Release-6 kept because it was the most recently deployed to Environment-2", result);
         }
 
     }
